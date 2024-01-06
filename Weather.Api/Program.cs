@@ -1,14 +1,29 @@
+using Microsoft.EntityFrameworkCore;
+
+using Weather.Api.Extensions;
+using Weather.Api.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+string connectionString = builder.Configuration.GetConnectionString("WeatherConnectionString") ?? string.Empty;
+builder.Services.AddDbContextPool<WeatherDbContext>(options => options
+                   .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)
+               ));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.AddApiHealthCheck();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsProduction())
+{
+   app.UseHsts();
+}
+else
 {
    app.UseSwagger();
    app.UseSwaggerUI();
@@ -16,29 +31,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-   var forecast = Enumerable.Range(1, 5).Select(index =>
-       new WeatherForecast
-       (
-           DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-           Random.Shared.Next(-20, 55),
-           summaries[Random.Shared.Next(summaries.Length)]
-       ))
-       .ToArray();
-   return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.MapApiHealthCheck();
 
 app.Run();
 
-internal sealed record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-   public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public sealed partial class Program;
