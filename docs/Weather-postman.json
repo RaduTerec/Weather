@@ -15,6 +15,47 @@
                     },
                     "id": "rester-145",
                     "name": "HealthCheck"
+                },
+                {
+                    "name": "User",
+                    "item": [
+                        {
+                            "request": {
+                                "url": "https://{$env.weatherUrl}/user/login",
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"string\"\n}"
+                                }
+                            },
+                            "id": "rester-146",
+                            "name": "Login"
+                        },
+                        {
+                            "request": {
+                                "url": "https://{$env.weatherUrl}/user/register",
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"string\",\n  \"userName\": \"user\"\n}"
+                                }
+                            },
+                            "id": "rester-147",
+                            "name": "Register"
+                        }
+                    ]
                 }
             ]
         }

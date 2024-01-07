@@ -25,7 +25,7 @@ A city cannot be removed if it has measurements.
 
 There should be an endpoint to see if the app is healthy.
 
-The login should be rate limited to 10 requests per minute.
+The login should be rate limited at 10 requests per minute and the register at 1 request per hour.
 
 ## Context model
 
@@ -106,13 +106,13 @@ The `HealthCheck` ensures that all running processes required for the API to fun
 Since the check is not something which runs in isolation, it's a very good candidate for integration tests.
 
 The Api uses [RateLimiting](https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit) mainly to limit the number of requests on the login endpoint.  
-But since it's a good practice to have a fair usage for all users, there's also a global rate limiter and a limit for authenticated users. If it blows up, it can be changed from appsettings or even disabled, so don't worry and be happy.
+But since it's a good practice to have a fair usage for all users, there's also a global rate limiter.
 
 The `JWT` encodes the roles, if any, the audience, username and email. By having fixed roles, we are forced to tackle this in the integration tests.
 
 ## Models
 
-These are the models to achieve the _Weahter_ project. Explanations follow the model.
+These are the models to achieve the _Weather_ project. Explanations follow the model.
 
 ```mermaid
 ---
@@ -240,11 +240,43 @@ public override async ValueTask DisposeAsync()
 
 Finally, the factory has a method to seed the DB with just the required tables. Ideally, this would be solved using type injection, but I didn't manage to figure it out yet 😅.
 
+### Rate Limiting
+
+[RateLimiting](https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit) isn't something that can be unit-tested, because it depends on the pipeline configuration. So, here come integration tests to the rescue 😉
+
+The rate limiting login, register and global policies are configures in the [RateLimitingExtension](./Weather.Api/Extensions/RateLimitExtension.cs) class.
+
+The integration test don't read the values of appsettings. This can be used to our advantage because it offers a mechanism of separating the "live" settings from the "default" settings.  
+Specifically, for the [RateLimitSettings](./Weather.Api//Core/Options/RateLimitSettings.cs) in appsettings, the `LoginWindow` is defined at 60 seconds and the default setting is 1 second. Therefore, in the integration tests, we won't have to wait more than 1 second to trigger the rate limiting mechanism.
+
+The actual method for testing the rate limiting in the integration test is quite trivial:
+
+```C#
+[Fact]
+public async Task LoginAsync_ReturnsValidResponse()
+{
+   var client = _factory.CreateClient();
+   var loginDto = new LoginDTO { Email = FakeUserData.RegularUser.Email, Password = FakeUserData.RegularUser.Password };
+
+   // Act
+   var response = await client.PutAsJsonAsync(LoginPath, loginDto);
+   HttpResponseMessage tooManyRequestsResponse = new();
+   for (int i = 0; i <= _rateLimitSettings.LoginLimit; i++)
+   {
+      tooManyRequestsResponse = await client.PutAsJsonAsync(LoginPath, loginDto);
+   }
+
+   Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+   Assert.Equal(HttpStatusCode.TooManyRequests, tooManyRequestsResponse.StatusCode);
+}
+```
+
+
 ## Getting started
 
 1. If you don't have a Maria DB Server installed, head over to [MariaDB](https://mariadb.org/download/) and install the latest version.
 2. Install [.Net 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-3. Go to `%AppData%\Roaming\Microsoft\UserSecrets\` and create the folder `mamaliga-project\`
+3. Go to `%AppData%\Roaming\Microsoft\UserSecrets\` and create the folder `weather-project\`
 4. Here, create a file `secrets.json` with similar content like below. The name of the connection string, audience and issuer should not change. Having this file will ensure that sensible data is not committed in the repository.
 
 ```json

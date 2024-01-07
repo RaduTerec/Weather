@@ -60,8 +60,10 @@ public sealed class IntegrationTestsWebApplicationFactory<TProgram>
       var scope = this.Services.CreateAsyncScope();
       var dbContext = scope.ServiceProvider.GetRequiredService<WeatherDbContext>();
       await dbContext.Database.EnsureCreatedAsync();
-
-      await DbSeeder.SeedDatabaseAsync(dbContext, options);
+      if (!dbContext.Users.Any() && options != DataOptions.None)
+      {
+         await DbSeeder.SeedValuesAsync(dbContext, options);
+      }
    }
 
    public override async ValueTask DisposeAsync()
