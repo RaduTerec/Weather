@@ -27,17 +27,16 @@ public sealed class UserEndpointsTests
    public async Task LoginAsync_ReturnsValidResponse()
    {
       var client = _factory.CreateClient();
-      var loginDto = new LoginDTO { Email = FakeUserData.RegularUser.Email, Password = FakeUserData.RegularUser.Password };
 
       // Act
-      var response = await client.PutAsJsonAsync(LoginPath, loginDto);
+      string token = await client.GetAuthenticationToken(FakeUserData.RegularUser);
       HttpResponseMessage tooManyRequestsResponse = new();
       for (int i = 0; i <= _rateLimitSettings.LoginLimit; i++)
       {
-         tooManyRequestsResponse = await client.PutAsJsonAsync(LoginPath, loginDto);
+         tooManyRequestsResponse = await client.PutAsJsonAsync(LoginPath, new LoginDTO());
       }
 
-      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      Assert.NotEmpty(token);
       Assert.Equal(HttpStatusCode.TooManyRequests, tooManyRequestsResponse.StatusCode);
    }
 
@@ -49,6 +48,7 @@ public sealed class UserEndpointsTests
 
       // Act
       var response = await client.PostAsJsonAsync(RegisterPath, registerDto);
+      var authenticationResponse = await response.Content.ReadFromJsonAsync<AuthenticationResponseDto>();
       HttpResponseMessage tooManyRequestsResponse = new();
       for (int i = 0; i <= _rateLimitSettings.RegisterLimit; i++)
       {
@@ -57,6 +57,7 @@ public sealed class UserEndpointsTests
       }
 
       Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      Assert.NotEmpty(authenticationResponse!.Token);
       Assert.Equal(HttpStatusCode.TooManyRequests, tooManyRequestsResponse.StatusCode);
    }
 }

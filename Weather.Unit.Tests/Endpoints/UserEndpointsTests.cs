@@ -23,7 +23,7 @@ public sealed class UserEndpointsTests
       var unitOfWork = new FakeUnitOfWork(userRepository: _userRepository);
 
       // Act
-      var result = await UserEndpoints.LoginAsync(loginAttempt, unitOfWork, new FakePasswordHasher<User>());
+      var result = await UserEndpoints.LoginAsync(loginAttempt, unitOfWork, new FakePasswordHasher<User>(), new FakeUserService());
       var problemDetail = result.GetProblemDetails();
 
       Assert.Equal(400, problemDetail!.Status);
@@ -39,7 +39,7 @@ public sealed class UserEndpointsTests
       var unitOfWork = new FakeUnitOfWork(userRepository: _userRepository);
 
       // Act
-      var result = await UserEndpoints.LoginAsync(login, unitOfWork, new FakePasswordHasher<User>());
+      var result = await UserEndpoints.LoginAsync(login, unitOfWork, new FakePasswordHasher<User>(), new FakeUserService());
       var problemDetail = result.GetProblemDetails();
 
       Assert.Equal(400, problemDetail!.Status);
@@ -56,7 +56,7 @@ public sealed class UserEndpointsTests
       var unitOfWork = new FakeUnitOfWork(userRepository: _userRepository);
 
       // Act
-      var result = await UserEndpoints.RegisterAsync(register, unitOfWork, new FakePasswordHasher<User>());
+      var result = await UserEndpoints.RegisterAsync(register, unitOfWork, new FakePasswordHasher<User>(), new FakeUserService());
       var problemDetail = result.GetProblemDetails();
 
       Assert.Equal(400, problemDetail!.Status);

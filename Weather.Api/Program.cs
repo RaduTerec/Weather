@@ -6,6 +6,7 @@ using Weather.Api.Core.Models;
 using Weather.Api.Endpoints;
 using Weather.Api.Extensions;
 using Weather.Api.Persistence;
+using Weather.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +18,12 @@ builder.Services.AddDbContextPool<WeatherDbContext>(options => options
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
 
+builder.AddJwtAuthentication();
 builder.AddApiHealthCheck();
 builder.AddApiRateLimits();
 

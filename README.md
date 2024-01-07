@@ -283,10 +283,7 @@ public async Task LoginAsync_ReturnsValidResponse()
 {
   "ConnectionStrings:WeatherConnectionString": "server=localhost; port=3306; database=weather; user=some-user; password=some-complex-password",
   "JWTSettings": {
-    "key": "type-your-secret-key-here",
-    "Issuer": "WeatherApi",
-    "Audience": "WeatherUser",
-    "DurationInMinutes": 90
+    "key": "type-your-secret-key-here"
   }
 }
 ```

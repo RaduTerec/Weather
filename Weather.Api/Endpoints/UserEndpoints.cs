@@ -18,7 +18,7 @@ public static class UserEndpoints
       return userItems;
    }
 
-   public static async Task<IResult> LoginAsync(LoginDTO login, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher)
+   public static async Task<IResult> LoginAsync(LoginDTO login, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher, IUserService userService)
    {
       var user = await unitOfWork.Users.GetByEmailWithRolesAsync(login.Email);
       if (user == default)
@@ -32,11 +32,19 @@ public static class UserEndpoints
          return TypedResults.Problem(detail: "Invalid user data", statusCode: StatusCodes.Status400BadRequest);
       }
 
-      // will be replaced with a JWT token
-      return TypedResults.Ok();
+      var userRole = await unitOfWork.Roles.GetAsync(user.Roles.First().RoleId);
+
+      var dto = new AuthenticationResponseDto
+      {
+         Token = userService.CreateJwtToken(user, [userRole!])
+      };
+      return TypedResults.Ok(dto);
    }
 
-   public static async Task<IResult> RegisterAsync(RegisterDTO register, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher)
+   public static async Task<IResult> RegisterAsync(RegisterDTO register,
+                                                   IUnitOfWork unitOfWork,
+                                                   IPasswordHasher<User> passwordHasher,
+                                                   IUserService userService)
    {
       var user = await unitOfWork.Users.GetByEmailWithRolesAsync(register.Email);
       if (user != default)
@@ -53,7 +61,10 @@ public static class UserEndpoints
       await unitOfWork.Users.AddAsync(newUser);
       await unitOfWork.CommitAsync();
 
-      // will be replaced with a JWT token
-      return TypedResults.Ok();
+      var dto = new AuthenticationResponseDto
+      {
+         Token = userService.CreateJwtToken(newUser, [userRole])
+      };
+      return TypedResults.Ok(dto);
    }
 }

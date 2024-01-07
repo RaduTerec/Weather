@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 using Weather.Api.Core.Models;
 using Weather.Api.Persistence;
+using Weather.Integration.Tests.Common.Models;
 
 namespace Weather.Integration.Tests.Common;
 

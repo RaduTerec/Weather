@@ -1,7 +1,7 @@
 using Weather.Api.Core;
 using Weather.Api.Core.Models;
 
-namespace Weather.Integration.Tests.Common;
+namespace Weather.Integration.Tests.Common.Models;
 
 internal static class FakeUserData
 {
