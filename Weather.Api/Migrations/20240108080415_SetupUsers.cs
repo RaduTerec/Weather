@@ -54,21 +54,21 @@ namespace Weather.Api.Migrations
              name: "UserRoles",
              columns: table => new
              {
-                UserId = table.Column<int>(type: "int", nullable: false),
-                RoleId = table.Column<int>(type: "int", nullable: false)
+                RolesId = table.Column<int>(type: "int", nullable: false),
+                UsersId = table.Column<int>(type: "int", nullable: false)
              },
              constraints: table =>
              {
-                table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                table.PrimaryKey("PK_UserRoles", x => new { x.RolesId, x.UsersId });
                 table.ForeignKey(
-                       name: "FK_UserRoles_Roles_RoleId",
-                       column: x => x.RoleId,
+                       name: "FK_UserRoles_Roles_RolesId",
+                       column: x => x.RolesId,
                        principalTable: "Roles",
                        principalColumn: "Id",
                        onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                       name: "FK_UserRoles_Users_UserId",
-                       column: x => x.UserId,
+                       name: "FK_UserRoles_Users_UsersId",
+                       column: x => x.UsersId,
                        principalTable: "Users",
                        principalColumn: "Id",
                        onDelete: ReferentialAction.Cascade);
@@ -76,9 +76,9 @@ namespace Weather.Api.Migrations
              .Annotation("MySql:CharSet", "utf8mb4");
 
          migrationBuilder.CreateIndex(
-             name: "IX_UserRoles_RoleId",
+             name: "IX_UserRoles_UsersId",
              table: "UserRoles",
-             column: "RoleId");
+             column: "UsersId");
 
          migrationBuilder.Sql($"INSERT INTO `Roles` (`Name`) VALUES ('{Constants.Admin}')");
          migrationBuilder.Sql($"INSERT INTO `Roles` (`Name`) VALUES ('{Constants.User}')");

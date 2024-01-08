@@ -32,11 +32,9 @@ public static class UserEndpoints
          return TypedResults.Problem(detail: "Invalid user data", statusCode: StatusCodes.Status400BadRequest);
       }
 
-      var userRole = await unitOfWork.Roles.GetAsync(user.Roles.First().RoleId);
-
       var dto = new AuthenticationResponseDto
       {
-         Token = userService.CreateJwtToken(user, [userRole!])
+         Token = userService.CreateJwtToken(user, user.Roles)
       };
       return TypedResults.Ok(dto);
    }
@@ -55,15 +53,14 @@ public static class UserEndpoints
       string passwordHash = passwordHasher.HashPassword(new User(), register.Password);
       var userRole = await unitOfWork.Roles.GetByNameAsync(Constants.User);
 
-      var newUser = new User() { Email = register.Email, UserName = register.UserName, PasswordHash = passwordHash };
-      newUser.Roles = new Collection<UserRole> { new() { UserId = newUser.Id, RoleId = userRole!.Id } };
+      var newUser = new User() { Email = register.Email, UserName = register.UserName, PasswordHash = passwordHash, Roles = [userRole!] };
 
       await unitOfWork.Users.AddAsync(newUser);
       await unitOfWork.CommitAsync();
 
       var dto = new AuthenticationResponseDto
       {
-         Token = userService.CreateJwtToken(newUser, [userRole])
+         Token = userService.CreateJwtToken(newUser, [userRole!])
       };
       return TypedResults.Ok(dto);
    }

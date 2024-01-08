@@ -11,5 +11,5 @@ public sealed class Role : IEntity
    [StringLength(255)]
    public string Name { get; init; } = string.Empty;
 
-   public ICollection<UserRole> Users { get; set; } = new Collection<UserRole>();
+   public ICollection<User> Users { get; set; } = new Collection<User>();
 }

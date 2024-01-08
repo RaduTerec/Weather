@@ -10,18 +10,12 @@ public static class UserExtensions
 {
    private static readonly PasswordHasher<User> _hasher = new();
 
-   internal static User ToUser(this FakeUser fakeUser)
+   internal static User ToUser(this FakeUser fakeUser, WeatherDbContext context)
       => new()
       {
          Email = fakeUser.Email,
          UserName = fakeUser.UserName,
          PasswordHash = _hasher.HashPassword(new User(), fakeUser.Password),
-      };
-
-   internal static UserRole ToUserRole(this FakeUser fakeUser, WeatherDbContext context)
-      => new()
-      {
-         User = context.Users.First(us => us.Email == fakeUser.Email),
-         Role = context.Roles.First(rl => rl.Name == fakeUser.Roles.First().Name)
+         Roles = [context.Roles.First(rl => rl.Name == fakeUser.Roles[0].Name)],
       };
 }

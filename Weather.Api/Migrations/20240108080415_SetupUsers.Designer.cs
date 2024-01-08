@@ -10,7 +10,7 @@ using Weather.Api.Persistence;
 namespace Weather.Api.Migrations
 {
     [DbContext(typeof(WeatherDbContext))]
-    [Migration("20240107095335_SetupUsers")]
+    [Migration("20240108080415_SetupUsers")]
     partial class SetupUsers
     {
         /// <inheritdoc />
@@ -20,6 +20,21 @@ namespace Weather.Api.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("UserRoles", b =>
+                {
+                    b.Property<int>("RolesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("UserRoles");
+                });
 
             modelBuilder.Entity("Weather.Api.Core.Models.Role", b =>
                 {
@@ -63,48 +78,19 @@ namespace Weather.Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Weather.Api.Core.Models.UserRole", b =>
+            modelBuilder.Entity("UserRoles", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRoles");
-                });
-
-            modelBuilder.Entity("Weather.Api.Core.Models.UserRole", b =>
-                {
-                    b.HasOne("Weather.Api.Core.Models.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("Weather.Api.Core.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Weather.Api.Core.Models.User", "User")
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId")
+                    b.HasOne("Weather.Api.Core.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Weather.Api.Core.Models.Role", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Weather.Api.Core.Models.User", b =>
-                {
-                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

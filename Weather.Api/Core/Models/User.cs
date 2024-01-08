@@ -21,5 +21,5 @@ public sealed class User : IEntity
    public string PasswordHash { get; set; } = string.Empty;
 
    [Required]
-   public ICollection<UserRole> Roles { get; set; } = new Collection<UserRole>();
+   public ICollection<Role> Roles { get; set; } = new Collection<Role>();
 }
