@@ -5,12 +5,15 @@ namespace Weather.Unit.Tests.Common.Fakes;
 
 internal sealed class FakeUnitOfWork : IUnitOfWork
 {
+   public ICityRepository Cities { get; }
    public IRoleRepository Roles { get; }
    public IUserRepository Users { get; }
 
-   public FakeUnitOfWork(IRoleRepository roleRepository = null!,
+   public FakeUnitOfWork(ICityRepository cityRepository = null!,
+                         IRoleRepository roleRepository = null!,
                          IUserRepository userRepository = null!)
    {
+      Cities = cityRepository;
       Roles = roleRepository;
       Users = userRepository;
    }

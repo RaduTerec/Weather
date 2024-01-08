@@ -7,6 +7,7 @@ internal sealed class UnitOfWork : IUnitOfWork
 {
    private readonly WeatherDbContext _dbContext;
 
+   public ICityRepository Cities { get; }
    public IRoleRepository Roles { get; }
    public IUserRepository Users { get; }
 
@@ -14,6 +15,7 @@ internal sealed class UnitOfWork : IUnitOfWork
    {
       _dbContext = dbContext;
 
+      Cities = new CityRepository(_dbContext);
       Roles = new RoleRepository(_dbContext);
       Users = new UserRepository(_dbContext);
    }

@@ -272,6 +272,33 @@ public async Task LoginAsync_ReturnsValidResponse()
 }
 ```
 
+### Authentication and authorization
+
+The API defines [2 policies](./Weather.Api/Extensions/HostExtensions.cs) for user roles, one for admins and one for users. The _city_ endpoints for insert/update/delete can only be accessed by admins. See the `ToCityEndpoints` method in [`CityEndpoints`](./Weather.Api/Endpoints/CityEndpoints.cs).
+
+By having default values for the [JWTSettings](./Weather.Api/Core/Options/JWTSettings.cs) we can ensure that a valid authentication schema, _with roles_, is created for the integration tests.  
+So, testing that an admin can update a city, becomes something as trivial as:
+
+```C#
+[Fact]
+public async Task UpdateAsync_ReturnsOk_WhenAdminUpdatesData()
+{
+   var client = _factory.CreateClient();
+   var scope = _factory.Services.CreateAsyncScope();
+   var dbContext = scope.ServiceProvider.GetRequiredService<WeatherDbContext>();
+   int cityId = dbContext.Cities.First(cty => cty.Name == "Zürich").Id;
+   var updatedCity = new CityDTO { Id = cityId, Name = "Züri" };
+
+   // Act
+   string token = await client.GetAuthenticationToken(FakeUserData.Admin);
+   var cityResponse = await client.AuthenticatedJsonPutAsync($"{CityPath}{cityId}", updatedCity, token);
+   var updatedCityDto = await cityResponse.Content.ReadFromJsonAsync<CityDTO>();
+
+   Assert.Equal(updatedCity.Id, updatedCityDto!.Id);
+   Assert.Equal(updatedCity.Name, updatedCityDto.Name);
+}
+```
+
 ## Getting started
 
 1. If you don't have a Maria DB Server installed, head over to [MariaDB](https://mariadb.org/download/) and install the latest version.

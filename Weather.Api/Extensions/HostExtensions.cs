@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
+using Weather.Api.Core;
 using Weather.Api.Core.Options;
 
 namespace Weather.Api.Extensions;
@@ -37,5 +38,12 @@ internal static class HostExtensions
             IssuerSigningKey = issuerSigningKey,
          };
       });
+   }
+
+   public static void AddAuthorizationPolicies(this IServiceCollection services)
+   {
+      services.AddAuthorizationBuilder()
+              .AddPolicy(Constants.AdminAuthPolicy, policy => policy.RequireRole(Constants.Admin))
+              .AddPolicy(Constants.UserAuthPolicy, policy => policy.RequireRole(Constants.User));
    }
 }

@@ -22,6 +22,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
+builder.Services.AddAuthorizationPolicies();
 
 builder.AddJwtAuthentication();
 builder.AddApiHealthCheck();
@@ -43,10 +44,15 @@ else
 app.UseHttpsRedirection();
 app.MapApiHealthCheck();
 app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGroup("/user")
    .ToUserEndpoints()
    .WithTags("Public");
+
+app.MapGroup("/city")
+   .ToCityEndpoints();
 
 app.Run();
 

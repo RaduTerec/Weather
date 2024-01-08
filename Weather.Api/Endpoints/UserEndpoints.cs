@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 using Microsoft.AspNetCore.Identity;
 
 using Weather.Api.Core;

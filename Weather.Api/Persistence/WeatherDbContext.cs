@@ -8,6 +8,8 @@ internal sealed class WeatherDbContext(DbContextOptions<WeatherDbContext> option
 {
    public DbSet<User> Users { get; set; } = null!;
    public DbSet<Role> Roles { get; set; } = null!;
+   public DbSet<City> Cities { get; set; } = null!;
+   public DbSet<Measurement> Measurements { get; set; } = null!;
 
    protected override void OnModelCreating(ModelBuilder builder)
    {
@@ -18,5 +20,10 @@ internal sealed class WeatherDbContext(DbContextOptions<WeatherDbContext> option
              .HasMany(usr => usr.Roles)
              .WithMany(rle => rle.Users)
              .UsingEntity("UserRoles");
+
+      builder.Entity<City>()
+             .HasMany(cty => cty.Measurements)
+             .WithOne(msm => msm.City)
+             .OnDelete(DeleteBehavior.Restrict);
    }
 }

@@ -22,4 +22,6 @@ public sealed class User : IEntity
 
    [Required]
    public ICollection<Role> Roles { get; set; } = new Collection<Role>();
+
+   public ICollection<Measurement> Measurements { get; set; } = new Collection<Measurement>();
 }
