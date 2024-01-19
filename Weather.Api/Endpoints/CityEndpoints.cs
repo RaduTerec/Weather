@@ -18,7 +18,7 @@ public static class CityEndpoints
       return cityItems;
    }
 
-   public static async Task<IResult> GetAsync([FromRoute] int id, IUnitOfWork unitOfWork)
+   internal static async Task<IResult> GetAsync([FromRoute] int id, IUnitOfWork unitOfWork)
    {
       var city = await unitOfWork.Cities.GetAsync(id);
       if (city == default)
@@ -30,7 +30,7 @@ public static class CityEndpoints
       return TypedResults.Ok(cityDto);
    }
 
-   public static async Task<IResult> InsertAsync([FromBody] CityDTO cityDto, IUnitOfWork unitOfWork)
+   internal static async Task<IResult> InsertAsync([FromBody] CityDTO cityDto, IUnitOfWork unitOfWork)
    {
       if (cityDto.Id != default)
       {
@@ -51,7 +51,7 @@ public static class CityEndpoints
       return TypedResults.Ok(insertedCityDto);
    }
 
-   public static async Task<IResult> UpdateAsync([FromRoute] int id, [FromBody] CityDTO cityDto, IUnitOfWork unitOfWork)
+   internal static async Task<IResult> UpdateAsync([FromRoute] int id, [FromBody] CityDTO cityDto, IUnitOfWork unitOfWork)
    {
       var city = await unitOfWork.Cities.GetAsync(id);
       if (city == default)
@@ -72,7 +72,7 @@ public static class CityEndpoints
       return TypedResults.Ok(updatedCityDto);
    }
 
-   public static async Task<IResult> DeleteAsync([FromRoute] int id, IUnitOfWork unitOfWork)
+   internal static async Task<IResult> DeleteAsync([FromRoute] int id, IUnitOfWork unitOfWork)
    {
       var city = await unitOfWork.Cities.GetWithMeasurements(id);
       if (city == default)

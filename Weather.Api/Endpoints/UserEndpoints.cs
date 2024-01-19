@@ -16,7 +16,7 @@ public static class UserEndpoints
       return userItems;
    }
 
-   public static async Task<IResult> LoginAsync(LoginDTO login, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher, IUserService userService)
+   internal static async Task<IResult> LoginAsync(LoginDTO login, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher, IUserService userService)
    {
       var user = await unitOfWork.Users.GetByEmailWithRolesAsync(login.Email);
       if (user == default)
@@ -37,7 +37,7 @@ public static class UserEndpoints
       return TypedResults.Ok(dto);
    }
 
-   public static async Task<IResult> RegisterAsync(RegisterDTO register,
+   internal static async Task<IResult> RegisterAsync(RegisterDTO register,
                                                    IUnitOfWork unitOfWork,
                                                    IPasswordHasher<User> passwordHasher,
                                                    IUserService userService)

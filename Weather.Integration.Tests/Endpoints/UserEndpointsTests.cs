@@ -31,7 +31,7 @@ public sealed class UserEndpointsTests
       // Act
       string token = await client.GetAuthenticationToken(FakeUserData.RegularUser);
       HttpResponseMessage tooManyRequestsResponse = new();
-      for (int i = 0; i <= _rateLimitSettings.LoginLimit; i++)
+      for (int i = 0; i < _rateLimitSettings.LoginLimit; i++)
       {
          tooManyRequestsResponse = await client.PutAsJsonAsync(LoginPath, new LoginDTO());
       }
@@ -50,7 +50,7 @@ public sealed class UserEndpointsTests
       var response = await client.PostAsJsonAsync(RegisterPath, registerDto);
       var authenticationResponse = await response.Content.ReadFromJsonAsync<AuthenticationResponseDto>();
       HttpResponseMessage tooManyRequestsResponse = new();
-      for (int i = 0; i <= _rateLimitSettings.RegisterLimit; i++)
+      for (int i = 0; i < _rateLimitSettings.RegisterLimit; i++)
       {
          registerDto = new RegisterDTO { Email = $"user{i}@wth.com", Password = "What about this?!?", UserName = $"user{i}" };
          tooManyRequestsResponse = await client.PostAsJsonAsync(RegisterPath, registerDto);
